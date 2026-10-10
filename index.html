@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#03040a">
+<title>ФАЙЛ // ДОСТУП ЗАПРЕЩЁН</title>
+<style>
+:root{--blue:#4b66ff;--pale:#aab4ff;--red:#ff1d32;--ink:#03040a;--green:#9cffbd}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#020308;color:#dce0f5;font-family:Consolas,Monaco,"Courier New",monospace}
+body{min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:20;opacity:.22;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.7) 3px,rgba(0,0,0,.7) 4px)}
+body:after{content:"";position:fixed;inset:-20%;pointer-events:none;z-index:21;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.65'/%3E%3C/svg%3E");animation:noise .18s steps(2) infinite}
+@keyframes noise{0%{transform:translate(0,0)}25%{transform:translate(2%,-1%)}50%{transform:translate(-1%,2%)}75%{transform:translate(1%,1%)}100%{transform:translate(-2%,-1%)}}
+#vhs{position:fixed;inset:0;z-index:18;pointer-events:none;opacity:0;background:rgba(42,55,180,.1)}
+#vhs.flash{animation:flash .48s steps(2) 1}@keyframes flash{0%,100%{opacity:0}15%{opacity:.8;background:#f1f2ff}35%{opacity:.2;background:#ff0018}60%{opacity:.6;background:#111d8e}}
+.shell{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:36px 20px;isolation:isolate}
+.topline{position:fixed;top:20px;left:22px;right:22px;display:flex;justify-content:space-between;gap:14px;color:#6e77a3;font-size:11px;letter-spacing:.18em;text-transform:uppercase;z-index:5}
+.rec{color:#ff3047;animation:blink 1.1s steps(2) infinite}.rec:before{content:"● ";font-size:10px}@keyframes blink{50%{opacity:.3}}
+.panel{position:relative;width:min(680px,100%);border:1px solid #252b52;background:linear-gradient(135deg,rgba(9,12,30,.94),rgba(3,4,10,.97));padding:clamp(24px,5vw,46px);box-shadow:0 0 0 1px rgba(30,45,140,.1),0 0 50px rgba(20,28,111,.13);}
+.panel:before,.panel:after{content:"";position:absolute;width:18px;height:18px;border-color:#5865d8;opacity:.85}
+.panel:before{top:-1px;left:-1px;border-top:2px solid;border-left:2px solid}.panel:after{bottom:-1px;right:-1px;border-right:2px solid;border-bottom:2px solid}
+.eyebrow{font-size:11px;letter-spacing:.24em;color:#707cae;margin-bottom:12px}
+h1{font-size:clamp(28px,6vw,48px);font-weight:500;letter-spacing:.08em;line-height:1.05;margin:0 0 20px;color:#f1f2ff;text-shadow:2px 0 rgba(50,70,255,.45),-2px 0 rgba(255,0,50,.2)}
+.lead{font-size:14px;line-height:1.8;color:#a5accd;margin:0 0 28px;max-width:54ch}.warning{color:#ff445b}.muted{color:#626b91}.rule{height:1px;background:linear-gradient(90deg,#3b4cc2,transparent);margin:24px 0}
+label{display:block;font-size:11px;letter-spacing:.17em;color:#8994c6;margin-bottom:10px;text-transform:uppercase}
+input{width:100%;background:#03050e;border:1px solid #353c70;color:#edf0ff;padding:15px 14px;outline:none;font:16px Consolas,monospace;letter-spacing:.08em;border-radius:0;box-shadow:inset 0 0 15px rgba(25,35,115,.16)}
+input:focus{border-color:#6d7dff;box-shadow:0 0 0 1px rgba(90,110,255,.18),0 0 22px rgba(55,75,255,.1)}
+button{margin-top:13px;width:100%;border:1px solid #4b59bc;background:#101735;color:#e8ebff;padding:14px 16px;font:12px Consolas,monospace;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:background .15s,border-color .15s}
+button:hover{background:#172454;border-color:#8491ff}button:active{transform:translateY(1px)}
+.feedback{min-height:20px;margin-top:14px;color:#ff4056;font-size:12px;letter-spacing:.08em;line-height:1.6}
+.hidden{display:none!important}
+#notice h1{font-size:clamp(26px,5vw,42px)}
+.alertline{padding:12px;border:1px solid rgba(255,37,62,.35);background:rgba(70,0,13,.13);font-size:12px;letter-spacing:.1em;line-height:1.7;color:#ff6474;margin:20px 0}
+.progress{display:flex;gap:7px;margin:0 0 26px}.step{height:3px;flex:1;background:#202543}.step.on{background:#596aff;box-shadow:0 0 10px rgba(80,100,255,.4)}
+.question-wrap{display:grid;grid-template-columns:minmax(0,1fr) 150px;gap:22px;align-items:center}
+.question{font-size:clamp(17px,3vw,22px);color:#f0f1ff;line-height:1.55;margin:0 0 10px}.question-sub{font-size:12px;color:#777fa7;line-height:1.7;margin:0 0 22px}
+.character{width:100%;aspect-ratio:16/9;object-fit:contain;display:block;filter:brightness(.85) contrast(1.18);mix-blend-mode:screen;transition:filter .2s}
+.char-frame{position:relative;align-self:center}.char-frame:after{content:"SIGNAL 00";position:absolute;bottom:3px;left:0;right:0;text-align:center;color:#424c83;font-size:8px;letter-spacing:.18em}
+#stage3 .char-frame{width:min(460px,100%);margin:20px auto 8px;transition:filter .3s}
+#stage3 .character{filter:brightness(.72) contrast(1.5) saturate(1.3)}
+.scramble{color:#a3a9c9;font-size:clamp(15px,2.4vw,21px);line-height:1.8;min-height:106px;overflow-wrap:anywhere;letter-spacing:.08em}
+.red-phrase{font-weight:bold;letter-spacing:.11em;font-size:clamp(20px,4vw,30px);line-height:1.4;color:var(--red);text-shadow:2px 0 #8d0010,-2px 0 #8f001b,0 0 13px rgba(255,0,30,.35);animation:shake .09s steps(2) infinite;min-height:76px}
+@keyframes shake{0%{transform:translate(0,0)}25%{transform:translate(1px,-1px)}50%{transform:translate(-1px,1px)}75%{transform:translate(1px,1px)}100%{transform:translate(-1px,-1px)}}
+.red-phrase.ready{animation:shake .09s steps(2) infinite}
+body.final{background:#000!important;color:#fff}body.final:before,body.final:after{opacity:0}body.final .topline,body.final .panel,body.final .shell>*:not(#ending){display:none!important}
+#ending{display:none;position:fixed;inset:0;background:#000;z-index:100;align-items:center;justify-content:center;padding:24px;text-align:center}body.final #ending{display:flex}
+#endingText{font-size:clamp(24px,6vw,50px);color:#ededed;letter-spacing:.12em;white-space:pre-wrap;text-shadow:0 0 9px rgba(255,255,255,.1);opacity:0}
+#endingText.show{opacity:1}
+.footer{margin-top:24px;color:#343b66;font-size:9px;letter-spacing:.18em;text-align:center}
+.shake-panel{animation:panelShake .32s linear}@keyframes panelShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+.distortion{animation:distort .3s steps(2)}@keyframes distort{0%{transform:translateX(-3px) skewX(-1deg);filter:brightness(2)}30%{transform:translateX(4px);filter:hue-rotate(50deg)}60%{transform:translateX(-2px) scaleY(1.02)}100%{transform:none;filter:none}}
+@media(max-width:560px){.topline{top:12px;left:12px;right:12px;font-size:9px}.shell{padding:62px 14px 24px}.panel{padding:23px 19px}.question-wrap{grid-template-columns:1fr}.question-wrap .char-frame{max-width:250px;margin:0 auto}.lead{font-size:13px}#stage3 .char-frame{margin-top:10px}}
+</style>
+</head>
+<body>
+<div id="vhs"></div>
+<div class="topline"><span>ЧЕРНИКА // АРХИВ</span><span class="rec">REC <span id="clock">00:00:00</span></span></div>
+<main class="shell">
+<section id="login" class="panel">
+  <div class="eyebrow">ЗАКРЫТЫЙ КАТАЛОГ / 001</div>
+  <h1>ФАЙЛ</h1>
+  <p class="lead">Для доступа к файлам черники введите пароль.</p>
+  <div class="rule"></div>
+  <form id="passwordForm" autocomplete="off">
+    <label for="password">Ключ доступа</label>
+    <input id="password" type="password" placeholder="••••••••••••" spellcheck="false" autofocus>
+    <button type="submit">Открыть каталог</button>
+    <div id="passwordFeedback" class="feedback" aria-live="polite"></div>
+  </form>
+  <div class="footer">НЕ КОПИРОВАТЬ · НЕ ПЕРЕСЫЛАТЬ · НЕ ОТКРЫВАТЬ В ОДИНОЧКУ</div>
+</section>
+<section id="notice" class="panel hidden">
+  <div class="eyebrow">СИСТЕМНОЕ СООБЩЕНИЕ / 0001</div>
+  <h1 class="warning">ОШИБКА</h1>
+  <div class="alertline">ЗАФИКСИРОВАНО НОВОЕ УСТРОЙСТВО.<br>ИСТОЧНИК НЕ ОПОЗНАН.</div>
+  <p class="lead">Пройдите три небольших теста, чтобы получить доступ к файлам.</p>
+  <p class="muted" style="font-size:11px;line-height:1.8">Пожалуйста, отвечайте точно.<br>Система уже запущена.</p>
+  <button id="begin">Начать тестирование</button>
+</section>
+<section id="stage1" class="panel hidden">
+  <div class="eyebrow">ПРОВЕРКА 01 / 03</div><div class="progress"><span class="step on"></span><span class="step"></span><span class="step"></span></div>
+  <div class="question-wrap">
+    <div><p class="question">На каком экспериментальном сервере находилась Черника?</p><p class="question-sub">Введите название на английском или русском языке.</p>
+    <form class="answer-form" data-stage="1" autocomplete="off"><label for="answer1">Введите ответ</label><input id="answer1" type="text" placeholder="НАЗВАНИЕ СЕРВЕРА" spellcheck="false"><button type="submit">Подтвердить ответ</button><div class="feedback" aria-live="polite"></div></form></div>
+    <div class="char-frame"><img class="character" src="assets/char_head_down.png" alt="Персонаж с опущенной головой"></div>
+  </div>
+</section>
+<section id="stage2" class="panel hidden">
+  <div class="eyebrow">ПРОВЕРКА 02 / 03</div><div class="progress"><span class="step on"></span><span class="step on"></span><span class="step"></span></div>
+  <div class="question-wrap">
+    <div><p class="question">Что он пытался открыть на этом сервере?</p><p class="question-sub">Ответ состоит ровно из трёх букв.</p>
+    <form class="answer-form" data-stage="2" autocomplete="off"><label for="answer2">Введите ответ</label><input id="answer2" type="text" maxlength="24" placeholder="_ _ _" spellcheck="false"><button type="submit">Подтвердить ответ</button><div class="feedback" aria-live="polite"></div></form></div>
+    <div class="char-frame"><img class="character" src="assets/char_head_down.png" alt="Персонаж с опущенной головой"></div>
+  </div>
+</section>
+<section id="stage3" class="panel hidden">
+  <div class="eyebrow">ПРОВЕРКА 03 / 03</div><div class="progress"><span class="step on"></span><span class="step on"></span><span class="step on"></span></div>
+  <p class="question">Последний вопрос.</p>
+  <p class="question-sub">СИМВОЛЫ НЕ СОВПАДАЮТ. НЕ ПЫТАЙТЕСЬ ИХ ЧИТАТЬ.</p>
+  <div id="scramble" class="scramble" aria-live="off"></div>
+  <div id="redPhrase" class="red-phrase"></div>
+  <div class="char-frame"><img id="finalCharacter" class="character" src="assets/char_head_down.png" alt="Персонаж из архива"></div>
+  <form id="safetyForm" autocomplete="off" class="hidden"><label for="safetyAnswer">Ты в безопасности?</label><input id="safetyAnswer" type="text" placeholder="ДА / НЕТ" spellcheck="false"><button type="submit">Ответить</button><div id="safetyFeedback" class="feedback" aria-live="polite"></div></form>
+  <div id="waitHint" class="footer">ОЖИДАЙТЕ СИГНАЛА…</div>
+</section>
+<div id="ending" aria-live="assertive"><div id="endingText"></div></div>
+</main>
+<script>
+(() => {
+  const $ = (s) => document.querySelector(s);
+  const allScreens = ['#login','#notice','#stage1','#stage2','#stage3'];
+  const vhs = $('#vhs');
+  const normalize = (s) => s.trim().toLocaleLowerCase('ru').replace(/[ё]/g,'е').replace(/\s+/g,'');
+  function show(id){ allScreens.forEach(sel => $(sel).classList.toggle('hidden', sel !== '#'+id)); }
+  function glitch(){ vhs.classList.remove('flash'); void vhs.offsetWidth; vhs.classList.add('flash'); }
+  function shake(el){ el.classList.remove('shake-panel'); void el.offsetWidth; el.classList.add('shake-panel'); }
+  function wrong(form, text){ const panel=form.closest('.panel'); form.querySelector('.feedback').textContent=text; shake(panel); glitch(); }
+
+  // A small live timecode gives the page a recording/archival feel.
+  const started = Date.now();
+  setInterval(() => { const s=Math.floor((Date.now()-started)/1000); $('#clock').textContent=[Math.floor(s/3600),Math.floor(s/60)%60,s%60].map(n=>String(n).padStart(2,'0')).join(':'); }, 1000);
+
+  $('#passwordForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    if(normalize($('#password').value) === normalize('Черника 001')) {
+      glitch(); show('notice'); setTimeout(glitch,350);
+    } else {
+      $('#passwordFeedback').textContent='ОШИБКА: КЛЮЧ НЕ ПРИНЯТ.';
+      $('#password').value=''; shake($('#login')); glitch();
+    }
+  });
+  $('#begin').addEventListener('click', () => { glitch(); show('stage1'); setTimeout(()=>$('#answer1').focus(),80); });
+
+  document.querySelectorAll('.answer-form').forEach(form => form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const stage = form.dataset.stage;
+    const value = normalize(form.querySelector('input').value);
+    if(stage==='1' && ['redwood','редвуд','редвудд'].includes(value)) {
+      glitch(); show('stage2'); setTimeout(()=>$('#answer2').focus(),80);
+    } else if(stage==='2' && value==='kkd') {
+      glitch(); show('stage3'); beginFinalTest();
+    } else {
+      wrong(form, stage==='1' ? 'ОТВЕТ НЕ СОВПАДАЕТ С ЗАПИСЬЮ. ПОПРОБУЙТЕ ЕЩЁ.' : 'НЕСОВПАДЕНИЕ. СИСТЕМА ЖДЁТ ПОВТОРНОГО ОТВЕТА.');
+      form.querySelector('input').value='';
+    }
+  }));
+
+  const glyphs = 'ЖЯЖЖⵣΨΞФѪÆЖ⍉ЖЖƵאЖΨϞЖѦӜⵣЖЯФ⍉ЖⴰΞЖжя⟁ЖЖФⵣЖΨꙮЖѬΞФЖⵣЖЯ⍉ЖЖϟⵣ';
+  let scrambleTimer, finalTimeout;
+  function beginFinalTest(){
+    const box=$('#scramble'); const red=$('#redPhrase'); const img=$('#finalCharacter');
+    $('#safetyForm').classList.add('hidden'); $('#waitHint').classList.remove('hidden');
+    red.textContent=''; box.textContent=''; img.src='assets/char_head_down.png';
+    let count=0;
+    scrambleTimer=setInterval(()=>{
+      let output=''; const len=86 + Math.floor(Math.random()*60);
+      for(let i=0;i<len;i++) output += glyphs[Math.floor(Math.random()*glyphs.length)] + (Math.random()>.82?' ':'');
+      box.textContent=output; count++;
+      if(count>=15){ clearInterval(scrambleTimer); box.textContent=''; typeRedPhrase(); }
+    },150);
+  }
+  function typeRedPhrase(){
+    // The image changes to the raised-head version at the exact start of the red warning.
+    $('#finalCharacter').src='assets/char_head_up.png';
+    glitch();
+    const phrase='ТЫ В БЕЗОПАСНОСТИ?'; let i=0; const el=$('#redPhrase');
+    el.classList.add('ready');
+    const timer=setInterval(()=>{
+      el.textContent=phrase.slice(0,++i);
+      if(i>=phrase.length){ clearInterval(timer); $('#waitHint').classList.add('hidden'); $('#safetyForm').classList.remove('hidden'); setTimeout(()=>$('#safetyAnswer').focus(),250); }
+    },135);
+  }
+  $('#safetyForm').addEventListener('submit',(e)=>{
+    e.preventDefault();
+    const answer=normalize($('#safetyAnswer').value);
+    const yes=['да','ага','конечно','yes','y','угу','верно','безопасно','safe','true','1'].includes(answer);
+    const no=['нет','не','no','n','неа','низачто','опасно','unsafe','false','0'].includes(answer);
+    // Silence, agreement and disagreement are all caught by the archive; ambiguity defaults to the accusation.
+    const ending = yes || (!no && answer.length>0) ? 'ТЫ НЕ ПРАВ.' : 'ТЫ ПРАВ.';
+    document.body.classList.add('final');
+    const out=$('#endingText'); out.textContent=''; out.classList.add('show');
+    setTimeout(()=>{
+      let i=0; finalTimeout=setInterval(()=>{out.textContent=ending.slice(0,++i); if(i>=ending.length) clearInterval(finalTimeout);},310);
+    },650);
+  });
+})();
+</script>
+</body>
+</html>
